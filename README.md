@@ -20,7 +20,7 @@
 
 > ### *- Deformer Weight Manager*
 
->> 该部分由@cgoengda 完成。
+>> 该部分由@cgpengda 完成。
 
 >> 库链接：https://github.com/TDChina/pengda-deformer-weight-manager
 
