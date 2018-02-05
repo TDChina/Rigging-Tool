@@ -78,7 +78,7 @@ class UsualSettingTab(qg.QWidget):
 
         # TODO：两个check、两个LineEdit（Prefix、Suffix）
 
-        # TODO：Rename按钮。
+        # TODO：Rename按钮。。。
 
         # TODO：find和replace两个labe 和对应的两个LIneEdit
 
