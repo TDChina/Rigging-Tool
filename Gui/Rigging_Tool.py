@@ -18,7 +18,7 @@ class RiggingTool(qg.QDialog):
         self.setWindowTitle("Rigging Tool")
         self.setWindowFlags(qc.Qt.WindowStaysOnTopHint)
         self.setFixedHeight(500)
-        self.setFixedWidth(350)
+        self.setFixedWidth(355)
 
         # 添加tabWidget
 
@@ -42,13 +42,12 @@ class UsualSettingTab(qg.QWidget):
         self.setLayout(qg.QVBoxLayout())
         newname_widget = qg.QWidget()
         newname_widget.setFixedHeight(285)
-        newname_widget.setFixedWidth(320)
+        newname_widget.setFixedWidth(330)
         newname_widget.setLayout(qg.QVBoxLayout())
 
         self.layout().addWidget(newname_widget)
         name_text_layout = qg. QHBoxLayout()
-        name_text_layout.layout().setContentsMargins(0, 0, 0, 0)
-        name_text_layout.layout().setAlignment(qc.Qt.AlignTop)
+        # name_text_layout.layout().setAlignment(qc.Qt.AlignTop)
         newname_widget.layout().addLayout(name_text_layout)
 
         # 添加New Name 以及其文本编辑器
@@ -59,22 +58,42 @@ class UsualSettingTab(qg.QWidget):
         name_text_layout.addWidget(name_text_lb)
         name_text_layout.addWidget(name_le)
 
-        # 设置默认递增方式（1-9/a-1) FIXME:记得修改，让该部分也可以置顶
+        # 设置默认递增方式（1-9/a-1)
 
-        ascending_layout = qg.QHBoxLayout()
-        ascending_layout.layout().setContentsMargins(0, 0, 0, 0)
-        ascending_layout.layout().setAlignment(qc.Qt.AlignTop)
-        newname_widget.layout().addLayout(ascending_layout)
+        incremental_layout = qg.QHBoxLayout()
+        # incremental_layout.layout().setAlignment(qc.Qt.AlignTop)
+        newname_widget.layout().addLayout(incremental_layout)
 
-        ascending_lb = qg.QLabel('Ascending:')
-        ascending_combo = qg.QComboBox()
-        ascending_combo.addItem('Numbers (0-9)')
-        ascending_combo.addItem('Letters (a-z)')
-        ascending_combo.setFixedWidth(100)
-        ascending_layout.addWidget(ascending_lb)
-        ascending_layout.addWidget(ascending_combo)
+        incremental_lb = qg.QLabel('Incremental:')
+        incremental_combo = qg.QComboBox()
+        incremental_combo.addItem('Numbers (0-9)')
+        incremental_combo.addItem('Letters (a-z)')
+        incremental_combo.setFixedWidth(100)
 
-        # TODO: 添加No.Padding:和 数字选择框以及大小写切换radio
+        incremental_layout.addWidget(incremental_lb)
+        incremental_layout.addWidget(incremental_combo)
+
+        # 添加No.Padding:和 数字选择框以及大小写切换radio
+
+        incremental_options_layout = qg.QHBoxLayout()
+        incremental_options_layout.layout().setAlignment(qc.Qt.AlignTop)
+        newname_widget.layout().addLayout(incremental_options_layout)
+
+        incremental_lb = qg.QLabel('No. Padding:')
+        incremental_spin = qg.QSpinBox()
+        incremental_spin.setMinimum(0)
+        incremental_spin.setMaximum(10)
+
+        lower_radio_radio = qg.QRadioButton('Lowercase')
+        upper_radio_radio = qg.QRadioButton('Uppercase')
+        lower_radio_radio.setVisible(False)
+        upper_radio_radio.setVisible(False)
+        lower_radio_radio.setChecked(True)
+
+        incremental_options_layout.addWidget(incremental_lb)
+        incremental_options_layout.addWidget(incremental_spin)
+        incremental_options_layout.addWidget(lower_radio_radio)
+        incremental_options_layout.addWidget(upper_radio_radio)
 
         # TODO：两个check、两个LineEdit（Prefix、Suffix）
 
