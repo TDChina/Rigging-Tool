@@ -10,7 +10,7 @@ import PySide.QtGui as qg
 
 
 class RiggingTool(qg.QDialog):
-    def __init__(self,):
+    def __init__(self, ):
         super(RiggingTool, self).__init__()
 
         # 设置主窗口
@@ -30,6 +30,31 @@ class RiggingTool(qg.QDialog):
         main_layout = qg.QVBoxLayout()
         main_layout.addWidget(tab_widget)
         self.setLayout(main_layout)
+
+
+# 设置Combox代理
+
+
+class YSComboxDelegate(qg.QStyledItemDelegate):
+    def __init__(self, color_dict, parent=None):
+        super(YSComboxDelegate, self).__init__(parent)
+        self.brush = qg.QBrush(qg.QColor(255, 0, 0, 255))
+
+        self.color_dict = color_dict
+
+        self.default_color = qg.QColor(255, 0, 0)
+
+    def paint(self, painter, options, index):
+        super(YSComboxDelegate, self).paint(painter,options,index)
+        data = index.model().data(index)
+        self.brush.setColor(self.color_dict.get(data,self.default_color))
+        painter.setBrush(self.brush)
+        painter.setPen(qg.QColor(255, 255, 255))
+        painter.drawRect(options.rect)
+        painter.drawText(options.rect, qc.Qt.AlignCenter, data)
+
+    def sizeHint(self, options, index):
+        return super(YSComboxDelegate, self).sizeHint(options, index)
 
 
 # TODO：设置Usual Setting标签
@@ -67,41 +92,47 @@ class UsualSettingTab(qg.QWidget):
         name_text_layout.addWidget(name_text_lb)
         name_text_layout.addWidget(name_le)
 
+        reg_ex = qc.QRegExp("^(?!^_)[a-zA-Z_]+")
+        text_validator = qg.QRegExpValidator(reg_ex, name_le)
+        name_le.setValidator(text_validator)
+
         # 设置默认递增方式（1-9/a-1)
 
         incremental_layout = qg.QHBoxLayout()
         usual_setting_widget.layout().addLayout(incremental_layout)
 
-        incremental_lb = qg.QLabel('Incremental:')
+        self.incremental_lb = qg.QLabel('Incremental:')
         incremental_combo = qg.QComboBox()
         incremental_combo.addItem('Numbers (0-9)')
         incremental_combo.addItem('Letters (a-z)')
         incremental_combo.setFixedWidth(100)
 
-        incremental_layout.addWidget(incremental_lb)
+        incremental_layout.addWidget(self.incremental_lb)
         incremental_layout.addWidget(incremental_combo)
 
-        # 添加No.Padding:和 数字选择框以及大小写切换radio
+        # 添加No.Padding:和数字选择框以及大小写切换radio
 
         incremental_options_layout = qg.QHBoxLayout()
         usual_setting_widget.layout().addLayout(incremental_options_layout)
 
-        incremental_lb = qg.QLabel('No. Padding:')
-        incremental_spin = qg.QSpinBox()
-        incremental_spin.setFixedWidth(35)
-        incremental_spin.setMinimum(0)
-        incremental_spin.setMaximum(10)
+        self.incremental_lb = qg.QLabel('No. Padding:')
+        self.incremental_spin = qg.QSpinBox()
+        self.incremental_spin.setFixedWidth(35)
+        self.incremental_spin.setMinimum(0)
+        self.incremental_spin.setMaximum(10)
 
-        lower_radio_radio = qg.QRadioButton('Lowercase')
-        upper_radio_radio = qg.QRadioButton('Uppercase')
-        lower_radio_radio.setVisible(False)
-        upper_radio_radio.setVisible(False)
-        lower_radio_radio.setChecked(True)
+        self.lower_radio = qg.QRadioButton('Lowercase')
+        self.lower_radio.setFixedHeight(23)
+        self.upper_radio = qg.QRadioButton('Uppercase')
+        self.upper_radio.setFixedHeight(23)
+        self.lower_radio.setVisible(False)
+        self.upper_radio.setVisible(False)
+        self.lower_radio.setChecked(True)
 
-        incremental_options_layout.addWidget(incremental_lb)
-        incremental_options_layout.addWidget(incremental_spin)
-        incremental_options_layout.addWidget(lower_radio_radio)
-        incremental_options_layout.addWidget(upper_radio_radio)
+        incremental_options_layout.addWidget(self.incremental_lb)
+        incremental_options_layout.addWidget(self.incremental_spin)
+        incremental_options_layout.addWidget(self.lower_radio)
+        incremental_options_layout.addWidget(self.upper_radio)
 
         # 两个check、两个LineEdit（Prefix、Suffix）
         fix_layout = qg.QHBoxLayout()
@@ -111,11 +142,13 @@ class UsualSettingTab(qg.QWidget):
         prefix_le = qg.QLineEdit()
         prefix_le.setEnabled(False)
         prefix_le.setFixedWidth(85)
+        prefix_le.setValidator(text_validator)
 
         suffix_check = qg.QCheckBox('Suffix:')
         suffix_le = qg.QLineEdit()
         suffix_le.setEnabled(False)
         suffix_le.setFixedWidth(85)
+        suffix_le.setValidator(text_validator)
 
         fix_layout.addWidget(prefix_check)
         fix_layout.addWidget(prefix_le)
@@ -147,6 +180,7 @@ class UsualSettingTab(qg.QWidget):
         find_lb = qg.QLabel('Find:')
         find_lb.setFixedWidth(55)
         find_le = qg.QLineEdit()
+        find_le.setValidator(text_validator)
 
         find_layout.addWidget(find_lb)
         find_layout.addWidget(find_le)
@@ -157,6 +191,7 @@ class UsualSettingTab(qg.QWidget):
         replace_lb = qg.QLabel('Replace:')
         replace_lb.setFixedWidth(55)
         replace_le = qg.QLineEdit()
+        replace_le.setValidator(text_validator)
 
         replace_layout.addWidget(replace_lb)
         replace_layout.addWidget(replace_le)
@@ -207,6 +242,21 @@ class UsualSettingTab(qg.QWidget):
         color_setting_layout = qg.QHBoxLayout()
         usual_setting_widget.layout().addLayout(color_setting_layout)
 
+        # color dict
+
+        self.color_dict = {
+            "Black": qg.QColor(0, 0, 0),
+            "Grey": qg.QColor(190, 190, 190),
+            "Blue": qg.QColor(0, 0, 190),
+            "DarkBlue": qg.QColor(0, 0, 128),
+            "Green": qg.QColor(0, 255, 0),
+            "DarkGreen": qg.QColor(0, 100, 0),
+            "Pink": qg.QColor(255, 192, 203),
+            "Orange": qg.QColor(255, 165, 0),
+            "Brown": qg.QColor(165, 42, 42),
+            "Purple": qg.QColor(160, 32, 240),
+        }
+
         color_lb = qg.QLabel('Color:')
         rgt_color_bttn = qg.QPushButton('Rgt')
         rgt_color_bttn.setFixedWidth(50)
@@ -215,50 +265,60 @@ class UsualSettingTab(qg.QWidget):
         lft_color_bttn = qg.QPushButton('Lft')
         lft_color_bttn.setFixedWidth(50)
         other_color_lb = qg.QLabel('Other:')
-        other_color_combo = qg.QComboBox()
-        other_color_combo.addItem('Black')
-        other_color_combo.addItem('Grey')
-        other_color_combo.addItem('Blue')
-        other_color_combo.addItem('DarkBlue')
-        other_color_combo.addItem('Green')
-        other_color_combo.addItem('DarkGreen')
-        other_color_combo.addItem('Pink')
-        other_color_combo.addItem('Orange')
-        other_color_combo.addItem('Brown')
-        other_color_combo.addItem('Purple')
+        self.other_color_combo = qg.QComboBox(self)
+        self.other_color_combo.setStyleSheet("background-color: rgb(0, 0, 0)")
+        self.other_color_combo.setItemDelegate(YSComboxDelegate(self.color_dict,self))
+        self.other_color_combo.addItem('Black')
+        self.other_color_combo.addItem('Grey')
+        self.other_color_combo.addItem('Blue')
+        self.other_color_combo.addItem('DarkBlue')
+        self.other_color_combo.addItem('Green')
+        self.other_color_combo.addItem('DarkGreen')
+        self.other_color_combo.addItem('Pink')
+        self.other_color_combo.addItem('Orange')
+        self.other_color_combo.addItem('Brown')
+        self.other_color_combo.addItem('Purple')
 
         # 设置按钮背景颜色
 
-        rgt_color_bttn.setStyleSheet("background-color: rgb(255, 0, 0);")
-        mid_color_bttn.setStyleSheet("background-color: rgb(0, 255, 0);")
-        lft_color_bttn.setStyleSheet("background-color: rgb(0, 0, 255);")
-        other_color_combo.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, \
-                                                stop:0 rgba(0, 0, 0, 255), \
-                                                stop:0.099 rgba(0, 0, 0, 255), \
-                                                stop:0.1 rgba(190, 190, 190, 255), \
-                                                stop:0.199 rgba(190, 190, 190, 255), \
-                                                stop:0.2 rgba(0, 0, 190, 255), \
-                                                stop:0.29902 rgba(0, 0, 190, 255), \
-                                                stop:0.3 rgba(0, 0, 128, 255), \
-                                                stop:0.399 rgba(0, 0, 128, 255), \
-                                                stop:0.4 rgba(0, 255, 0, 255), \
-                                                stop:0.499 rgba(0, 255, 0, 255), \
-                                                stop:0.5 rgba(0, 100, 0, 255), \
-                                                stop:0.599 rgba(0, 100, 0, 255), \
-                                                stop:0.6 rgba(255, 192, 203, 255), \
-                                                stop:0.699 rgba(255, 192, 203, 255), \
-                                                stop:0.7 rgba(255, 165, 0, 255), \
-                                                stop:0.799 rgba(255, 165, 0, 255), \
-                                                stop:0.803922 rgba(165, 42, 42, 255), \
-                                                stop:0.899 rgba(165, 42, 42, 255), \
-                                                stop:0.9 rgba(160, 32, 240, 255));")
+        rgt_color_bttn.setStyleSheet("background-color: rgb(255, 0, 0);color: rgb(0, 0, 0)")
+        mid_color_bttn.setStyleSheet("background-color: rgb(255, 255, 0);color: rgb(0, 0, 0)")
+        lft_color_bttn.setStyleSheet("background-color: rgb(0, 255, 0);color: rgb(0, 0, 0)")
+        # self.self.other_color_combo.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, \
+        #                                         stop:0 rgba(0, 0, 0, 255), \
+        #                                         stop:0.099 rgba(0, 0, 0, 255), \
+        #                                         stop:0.1 rgba(190, 190, 190, 255), \
+        #                                         stop:0.199 rgba(190, 190, 190, 255), \
+        #                                         stop:0.2 rgba(0, 0, 190, 255), \
+        #                                         stop:0.29902 rgba(0, 0, 190, 255), \
+        #                                         stop:0.3 rgba(0, 0, 128, 255), \
+        #                                         stop:0.399 rgba(0, 0, 128, 255), \
+        #                                         stop:0.4 rgba(0, 255, 0, 255), \
+        #                                         stop:0.499 rgba(0, 255, 0, 255), \
+        #                                         stop:0.5 rgba(0, 100, 0, 255), \
+        #                                         stop:0.599 rgba(0, 100, 0, 255), \
+        #                                         stop:0.6 rgba(255, 192, 203, 255), \
+        #                                         stop:0.699 rgba(255, 192, 203, 255), \
+        #                                         stop:0.7 rgba(255, 165, 0, 255), \
+        #                                         stop:0.799 rgba(255, 165, 0, 255), \
+        #                                         stop:0.803922 rgba(165, 42, 42, 255), \
+        #                                         stop:0.899 rgba(165, 42, 42, 255), \
+        #                                         stop:0.9 rgba(160, 32, 240, 255));")
 
         color_setting_layout.addWidget(color_lb)
         color_setting_layout.addWidget(rgt_color_bttn)
         color_setting_layout.addWidget(mid_color_bttn)
         color_setting_layout.addWidget(lft_color_bttn)
         color_setting_layout.addWidget(other_color_lb)
-        color_setting_layout.addWidget(other_color_combo)
+        color_setting_layout.addWidget(self.other_color_combo)
+
+        # UI按钮连接
+
+        prefix_check.stateChanged.connect(prefix_le.setEnabled)
+        suffix_check.stateChanged.connect(suffix_le.setEnabled)
+
+        incremental_combo.currentIndexChanged.connect(self._toggle_incremental)
+        self.other_color_combo.currentIndexChanged.connect(self._background_painter)
 
         # 添加至整体布局中
 
@@ -266,13 +326,29 @@ class UsualSettingTab(qg.QWidget):
         main_layout.addWidget(usual_setting_widget)
         self.setLayout(main_layout)
 
+    def _toggle_incremental(self, index):
+        self.lower_radio.setVisible(index)
+        self.upper_radio.setVisible(index)
+        self.incremental_lb.setVisible(not(index))
+        self.incremental_spin.setVisible(not(index))
+
+    def _background_painter(self):
+        current_text = self.other_color_combo.currentText()
+        background_color = self.color_dict.get(current_text, qg.QColor(0, 0, 0))
+        background_r = background_color.red()
+        background_g = background_color.green()
+        background_b = background_color.blue()
+
+        self.other_color_combo.setStyleSheet("background-color: rgba(%d, %d, %d, 255);"
+                                             % (background_r, background_g, background_b))
+
 
 # TODO：设置Deformer Weight Manager标签
 class DeformerTab(qg.QWidget):
     def __init__(self):
         super(DeformerTab, self).__init__()
 
-        file_name_la = qg.QLabel("File Name:")
+        file_name_la = qg.QLabel("Waiting...")
 
         main_layout = qg.QVBoxLayout()
         main_layout.addWidget(file_name_la)
@@ -284,7 +360,7 @@ class OtherTab(qg.QWidget):
     def __init__(self):
         super(OtherTab, self).__init__()
 
-        file_name_la = qg.QLabel("File Name:")
+        file_name_la = qg.QLabel("Waiting...")
 
         main_layout = qg.QVBoxLayout()
         main_layout.addWidget(file_name_la)
@@ -332,11 +408,11 @@ class Splitter(qg.QWidget):
         self.layout().addWidget(second_line)
 
 
-dialog = None
+# dialog = None
 
-
+# 定义创建函数
 def create():
     global dialog
-    if dialog is None:
-        dialog = RiggingTool()
+    # if dialog is None:
+    dialog = RiggingTool()
     dialog.show()
