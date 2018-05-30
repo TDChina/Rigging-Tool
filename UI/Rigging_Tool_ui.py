@@ -249,7 +249,7 @@ class UsualSettingTab(qg.QWidget):
             "Grey": qg.QColor(190, 190, 190),
             "Blue": qg.QColor(0, 0, 190),
             "DarkBlue": qg.QColor(0, 0, 128),
-            "Green": qg.QColor(0, 255, 0),
+            "Green": qg.QColor(0, 128, 0),
             "DarkGreen": qg.QColor(0, 100, 0),
             "Pink": qg.QColor(255, 192, 203),
             "Orange": qg.QColor(255, 165, 0),
