@@ -284,26 +284,6 @@ class UsualSettingTab(qg.QWidget):
         rgt_color_bttn.setStyleSheet("background-color: rgb(255, 0, 0);color: rgb(0, 0, 0)")
         mid_color_bttn.setStyleSheet("background-color: rgb(255, 255, 0);color: rgb(0, 0, 0)")
         lft_color_bttn.setStyleSheet("background-color: rgb(0, 255, 0);color: rgb(0, 0, 0)")
-        # self.self.other_color_combo.setStyleSheet("background-color: qlineargradient(spread:pad, x1:1, y1:0, x2:1, y2:1, \
-        #                                         stop:0 rgba(0, 0, 0, 255), \
-        #                                         stop:0.099 rgba(0, 0, 0, 255), \
-        #                                         stop:0.1 rgba(190, 190, 190, 255), \
-        #                                         stop:0.199 rgba(190, 190, 190, 255), \
-        #                                         stop:0.2 rgba(0, 0, 190, 255), \
-        #                                         stop:0.29902 rgba(0, 0, 190, 255), \
-        #                                         stop:0.3 rgba(0, 0, 128, 255), \
-        #                                         stop:0.399 rgba(0, 0, 128, 255), \
-        #                                         stop:0.4 rgba(0, 255, 0, 255), \
-        #                                         stop:0.499 rgba(0, 255, 0, 255), \
-        #                                         stop:0.5 rgba(0, 100, 0, 255), \
-        #                                         stop:0.599 rgba(0, 100, 0, 255), \
-        #                                         stop:0.6 rgba(255, 192, 203, 255), \
-        #                                         stop:0.699 rgba(255, 192, 203, 255), \
-        #                                         stop:0.7 rgba(255, 165, 0, 255), \
-        #                                         stop:0.799 rgba(255, 165, 0, 255), \
-        #                                         stop:0.803922 rgba(165, 42, 42, 255), \
-        #                                         stop:0.899 rgba(165, 42, 42, 255), \
-        #                                         stop:0.9 rgba(160, 32, 240, 255));")
 
         color_setting_layout.addWidget(color_lb)
         color_setting_layout.addWidget(rgt_color_bttn)
@@ -408,11 +388,9 @@ class Splitter(qg.QWidget):
         self.layout().addWidget(second_line)
 
 
-# dialog = None
-
 # 定义创建函数
+
 def create():
     global dialog
-    # if dialog is None:
     dialog = RiggingTool()
     dialog.show()
